@@ -19,6 +19,7 @@ class Button extends StatelessWidget {
     return Container(
       width: size.width * 0.9,
       color: color,
+      margin: EdgeInsets.symmetric(vertical: 20),
       child: TextButton(onPressed: press, child: Text(
         text,
         style: TextStyle(color: textColor),
