@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:progress_stepper/Screens/login_page.dart';
 import 'package:progress_stepper/components/Button.dart';
+import 'package:progress_stepper/components/alert.dart';
 import 'package:progress_stepper/components/body.dart';
 import 'package:progress_stepper/components/form_field_container.dart';
-import 'package:progress_stepper/components/option_input.dart';
 import 'package:progress_stepper/components/step_progress.dart';
 import 'package:progress_stepper/constants.dart';
 
@@ -18,11 +19,11 @@ class _ScheduleFormState extends State<ScheduleForm> {
   TimeOfDay _chosenTime = TimeOfDay.now();
   TextEditingController _chosenDateTextController = TextEditingController();
   TextEditingController _chosenTimeTextController = TextEditingController();
+  bool _validDate = false;
+  bool _validTime = false;
 
   bool _auth() {
-    return true;
-    // (_chosenDate.isNotEmpty && _chosenDate != null) &&
-    // (_chosenTime.isNotEmpty && _chosenTime != null);
+    return _validDate && _validTime;
   }
 
   String _getFormattedDate(date) {
@@ -65,6 +66,7 @@ class _ScheduleFormState extends State<ScheduleForm> {
       setState(() {
         _chosenDate = picked;
         _chosenDateTextController.text = _getFormattedDate(picked);
+        _validDate = true;
       });
     }
   }
@@ -83,9 +85,10 @@ class _ScheduleFormState extends State<ScheduleForm> {
     if (pickedTime != null && pickedTime != _chosenTime)
       setState(() {
         _chosenTime = pickedTime;
-        var hour = pickedTime.hour;
-        var minutes = pickedTime.minute;
+        var hour = pickedTime.hour > 9 ? pickedTime.hour : '0${pickedTime.hour}';
+        var minutes = pickedTime.minute > 9 ? pickedTime.minute : '0${pickedTime.minute}';
         _chosenTimeTextController.text = '$hour:$minutes';
+        _validTime = true;
       });
   }
 
@@ -197,9 +200,17 @@ class _ScheduleFormState extends State<ScheduleForm> {
               color: Colors.white.withOpacity(0.2),
               press: () {
                 if (_auth()) {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return ScheduleForm();
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                    return LoginPage();
                   }));
+                } else {
+                  showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return Alert(
+                            title: "Required Date & Time", content: "Please fill all input");
+                      });
                 }
               },
               text: "Next"),

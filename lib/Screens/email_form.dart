@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:progress_stepper/Screens/password_form.dart';
 import 'package:progress_stepper/components/Button.dart';
 import 'package:progress_stepper/components/body.dart';
-import 'package:progress_stepper/components/input_field.dart';
+import 'package:progress_stepper/components/form_field_container.dart';
 import 'package:progress_stepper/components/step_progress.dart';
 import 'package:progress_stepper/constants.dart';
 
@@ -13,9 +13,29 @@ class EmailForm extends StatefulWidget {
 
 class _EmailFormState extends State<EmailForm> {
   final int _curPage = 1;
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final _emailTextController = TextEditingController();
   Size _safeAreaSize;
   String email;
+  bool _validate = false;
+
+  bool _validateEmail(String value) {
+    Pattern pattern =
+        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+    RegExp regex = RegExp(pattern);
+    if (!regex.hasMatch(value)) {
+      setState(() {
+        _validate = true;
+      });
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  void dispose() {
+    _emailTextController.dispose();
+    super.dispose();
+  }
 
   Widget _getHeroSection() {
     return Container(
@@ -57,17 +77,33 @@ class _EmailFormState extends State<EmailForm> {
                     fontSize: 18),
               ),
               SizedBox(height: 20),
-              Form(
-                key: _formKey,
-                autovalidateMode: AutovalidateMode.always,
-                child: InputField(
-                    hintText: "Email",
-                    onChanged: (String value) {
-                      setState(() {
-                        email = value;
-                      });
-                    }),
-              ),
+              FormFieldContainer(
+                  child: Container(
+                margin: EdgeInsets.symmetric(vertical: 10),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 1),
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                    color: kInputFieldColor,
+                    borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                child: TextField(
+                  controller: _emailTextController,
+                  keyboardType: TextInputType.emailAddress,
+                  style: TextStyle(fontSize: 18),
+                  onChanged: (String value) {
+                    setState(() {
+                      email = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: 'Email',
+                      errorText: _validate ? 'Enter Valid Email' : null,
+                      icon: Icon(
+                        Icons.email_outlined,
+                        color: Colors.black,
+                      )),
+                ),
+              )),
             ]));
   }
 
@@ -103,13 +139,18 @@ class _EmailFormState extends State<EmailForm> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Button(
-                    press: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return PasswordForm();
-                      }));
-                    },
-                    text: "Next")
+                          press: () {
+                            if (!_validateEmail(email)) {
+                              setState(() {
+                                _validate = false;
+                              });
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return PasswordForm();
+                              }));
+                            }
+                          },
+                          text: "Next")
                     ],
                   ),
                 )

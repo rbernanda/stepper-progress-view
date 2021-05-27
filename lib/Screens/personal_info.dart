@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:progress_stepper/Screens/schedule_form.dart';
 import 'package:progress_stepper/components/Button.dart';
+import 'package:progress_stepper/components/alert.dart';
 import 'package:progress_stepper/components/body.dart';
 import 'package:progress_stepper/components/option_input.dart';
 import 'package:progress_stepper/components/step_progress.dart';
@@ -13,20 +14,35 @@ class PersonalInfo extends StatefulWidget {
 
 class _PersonalInfoState extends State<PersonalInfo> {
   final int _curPage = 3;
+  BuildContext parent, child;
   Size _safeAreaSize;
   String chosenGoal;
   String chosenMonthlyIncome;
   String chosenMonthlyExpense;
 
-  List<String> _goals = ['Emergencies', 'Comfortable Retirement', 'Kids College Education', 'Buying a House'];
-  List<String> _income = ['Rp 1.000.000+', 'Rp 2.000.000+', 'Rp 4.000.000+', 'Rp 6.000.000+'];
-  List<String> _expense = ['Rp 500.000+', 'Rp 1.000.000+', 'Rp 2.000.000+', 'Rp 5.000.000+'];
+  List<String> _goals = [
+    'Emergencies',
+    'Comfortable Retirement',
+    'Kids College Education',
+    'Buying a House'
+  ];
+  List<String> _income = [
+    'Rp 1.000.000+',
+    'Rp 2.000.000+',
+    'Rp 4.000.000+',
+    'Rp 6.000.000+'
+  ];
+  List<String> _expense = [
+    'Rp 500.000+',
+    'Rp 1.000.000+',
+    'Rp 2.000.000+',
+    'Rp 5.000.000+'
+  ];
 
   bool _auth() {
-    return 
-    (chosenGoal.isNotEmpty && chosenGoal != null) &&
-    (chosenMonthlyIncome.isNotEmpty && chosenMonthlyIncome != null) &&
-    (chosenMonthlyExpense.isNotEmpty && chosenMonthlyExpense != null);
+    return (chosenGoal != null && chosenGoal.isNotEmpty ) &&
+        (chosenMonthlyIncome != null && chosenMonthlyIncome.isNotEmpty) &&
+        (chosenMonthlyExpense != null && chosenMonthlyExpense.isNotEmpty);
   }
 
   Widget _mainSection() {
@@ -76,30 +92,28 @@ class _PersonalInfoState extends State<PersonalInfo> {
                   height: 10,
                 ),
                 OptionInput(
-                  hintText: "- Choose Option -",
-                  onChanged: (String value) {
-                    setState(() {
-                      chosenMonthlyIncome = value;
-                    });
-                  },
-                  chosenValue: chosenMonthlyIncome,
-                  label: "Monthly income",
-                  items: _income
-                ),
+                    hintText: "- Choose Option -",
+                    onChanged: (String value) {
+                      setState(() {
+                        chosenMonthlyIncome = value;
+                      });
+                    },
+                    chosenValue: chosenMonthlyIncome,
+                    label: "Monthly income",
+                    items: _income),
                 SizedBox(
                   height: 10,
                 ),
                 OptionInput(
-                  hintText: "- Choose Option -",
-                  onChanged: (String value) {
-                    setState(() {
-                      chosenMonthlyExpense = value;
-                    });
-                  },
-                  chosenValue: chosenMonthlyExpense,
-                  label: "Monthly expense",
-                  items: _expense
-                )
+                    hintText: "- Choose Option -",
+                    onChanged: (String value) {
+                      setState(() {
+                        chosenMonthlyExpense = value;
+                      });
+                    },
+                    chosenValue: chosenMonthlyExpense,
+                    label: "Monthly expense",
+                    items: _expense)
               ],
             ),
           ),
@@ -110,6 +124,14 @@ class _PersonalInfoState extends State<PersonalInfo> {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return ScheduleForm();
                   }));
+                } else {
+                  showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return Alert(
+                            title: "Required Personal Info", content: "Please fill all input");
+                      });
                 }
               },
               text: "Next"),

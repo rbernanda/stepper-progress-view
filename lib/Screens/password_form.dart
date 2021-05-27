@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:progress_stepper/Screens/personal_info.dart';
 import 'package:progress_stepper/components/Button.dart';
+import 'package:progress_stepper/components/alert.dart';
 import 'package:progress_stepper/components/body.dart';
 import 'package:progress_stepper/components/password_field.dart';
 import 'package:progress_stepper/components/step_progress.dart';
@@ -16,6 +17,7 @@ class PasswordFormState extends State<PasswordForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final _required = ["Lowercase", "Uppercase", "Number", "Characters"];
   final _requiredSymbol = ["a", "A", "123", "9+"];
+  BuildContext parent, child;
   Size _safeAreaSize;
   String _password = "";
   bool _secure = true;
@@ -217,6 +219,13 @@ class PasswordFormState extends State<PasswordForm> {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return PersonalInfo();
                   }));
+                } else {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (BuildContext context) {
+                      return Alert(title: "Password", content: "Please fill all required character");
+                    });
                 }
               },
               text: "Next"),

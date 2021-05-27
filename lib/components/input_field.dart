@@ -11,16 +11,6 @@ class InputField extends StatelessWidget {
     this.onChanged,
   }) : super(key: key);
 
-  String validateEmail(String value) {
-    Pattern pattern =
-        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-    RegExp regex = new RegExp(pattern);
-    if (!regex.hasMatch(value))
-      return 'Enter Valid Email';
-    else
-      return null;
-  }
-
   @override
   Widget build(BuildContext context) {
      return FormFieldContainer(
@@ -39,7 +29,6 @@ class InputField extends StatelessWidget {
         onChanged: onChanged,
         cursorColor: Colors.black,
         keyboardType: TextInputType.emailAddress,
-        validator: validateEmail,
         decoration: InputDecoration(
           icon: Icon(
             Icons.email_outlined,
@@ -47,6 +36,7 @@ class InputField extends StatelessWidget {
           ),
           hintText: hintText,
           border: InputBorder.none,
+          errorText: null 
         ),
       ),
       )
