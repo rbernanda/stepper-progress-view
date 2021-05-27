@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:progress_stepper/Screens/personal_info.dart';
 import 'package:progress_stepper/components/Button.dart';
 import 'package:progress_stepper/components/body.dart';
 import 'package:progress_stepper/components/password_field.dart';
@@ -60,10 +61,15 @@ class PasswordFormState extends State<PasswordForm> {
   }
 
   void _generateComplexity(password) {
-    bool hasSpecialCharacters = password.contains(new RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+    bool hasSpecialCharacters =
+        password.contains(new RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
     bool passwordCompliant = _auth();
     setState(() {
-       complexity = (passwordCompliant && hasSpecialCharacters) ? "Strong" : passwordCompliant ? "Very Weak" : "";
+      complexity = (passwordCompliant && hasSpecialCharacters)
+          ? "Strong"
+          : passwordCompliant
+              ? "Very Weak"
+              : "";
     });
   }
 
@@ -137,7 +143,7 @@ class PasswordFormState extends State<PasswordForm> {
                 ),
                 Text(
                   'Password will be used to login to account',
-                  style: TextStyle(fontSize: 18, color: Colors.white70),
+                  style: TextStyle(fontSize: 16, color: Colors.white70),
                 )
               ],
             ),
@@ -205,10 +211,12 @@ class PasswordFormState extends State<PasswordForm> {
           ),
           SizedBox(height: 1),
           Button(
-              color: Colors.green,
+              color: Colors.white.withOpacity(0.2),
               press: () {
                 if (_auth()) {
-                  Navigator.pop(context);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return PersonalInfo();
+                  }));
                 }
               },
               text: "Next"),
