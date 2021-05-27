@@ -18,7 +18,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
   String chosenMonthlyIncome;
   String chosenMonthlyExpense;
 
-  List<String> _goal = ['Emergencies', 'Comfortable Retirement', 'Kids College Education', 'Buying a House'];
+  List<String> _goals = ['Emergencies', 'Comfortable Retirement', 'Kids College Education', 'Buying a House'];
   List<String> _income = ['Rp 1.000.000+', 'Rp 2.000.000+', 'Rp 4.000.000+', 'Rp 6.000.000+'];
   List<String> _expense = ['Rp 500.000+', 'Rp 1.000.000+', 'Rp 2.000.000+', 'Rp 5.000.000+'];
 
@@ -70,7 +70,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
                   },
                   chosenValue: chosenGoal,
                   label: "Goal for activation",
-                  items: _goal,
+                  items: _goals,
                 ),
                 SizedBox(
                   height: 10,

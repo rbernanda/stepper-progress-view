@@ -7,8 +7,9 @@ class OptionInput extends StatelessWidget {
   final chosenValue;
   final label;
   final List<String> items;
+  final Function ontap;
   const OptionInput(
-      {Key key, this.hintText, this.onChanged, this.chosenValue, this.label, this.items})
+      {Key key, this.hintText, this.onChanged, this.chosenValue, this.label, this.items, this.ontap})
       : super(key: key);
 
   @override
@@ -27,6 +28,7 @@ class OptionInput extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
           child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
+            onTap: ontap,
             isExpanded: true,
             isDense: true,
             value: chosenValue,
@@ -36,7 +38,7 @@ class OptionInput extends StatelessWidget {
               style: TextStyle(
                   color: Colors.black,
                   fontSize: 16,
-                  fontWeight: FontWeight.w600),
+                  fontWeight: FontWeight.bold),
             ),
             items: items.map((String value) {
               return DropdownMenuItem<String>(
