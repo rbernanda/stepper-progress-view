@@ -16,7 +16,7 @@ class PasswordFormState extends State<PasswordForm> {
   final _required = ["Lowercase", "Uppercase", "Number", "Characters"];
   final _requiredSymbol = ["a", "A", "123", "9+"];
   Size _safeAreaSize;
-  String password;
+  String _password = "";
   bool _secure = true;
   Widget icon = Icon(Icons.visibility_outlined);
   String complexity = "";
@@ -30,19 +30,72 @@ class PasswordFormState extends State<PasswordForm> {
     });
   }
 
-  List<Widget> _buildRequiredCharacter() {
+  // live validation
+  bool _validatePassword(String password, String requiredChar,
+      [int minLength = 9]) {
+    switch (requiredChar) {
+      case "a":
+        bool hasLowercase = password.contains(RegExp(r'[a-z]'));
+        return hasLowercase;
+      case "A":
+        bool hasUppercase = password.contains(RegExp(r'[A-Z]'));
+        return hasUppercase;
+      case "123":
+        bool hasDigits = password.contains(RegExp(r'[0-9]'));
+        return hasDigits;
+      case "9+":
+        bool hasMinLength = password.length > minLength;
+        return hasMinLength;
+      default:
+        return false;
+    }
+  }
+
+  bool _auth() {
+    bool hasLowercase = _password.contains(RegExp(r'[a-z]'));
+    bool hasUppercase = _password.contains(RegExp(r'[A-Z]'));
+    bool hasDigits = _password.contains(RegExp(r'[0-9]'));
+    bool hasMinLength = _password.length > 9;
+    return hasLowercase && hasUppercase && hasDigits && hasMinLength;
+  }
+
+  void _generateComplexity(password) {
+    bool hasSpecialCharacters = password.contains(new RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+    bool passwordCompliant = _auth();
+    setState(() {
+       complexity = (passwordCompliant && hasSpecialCharacters) ? "Strong" : passwordCompliant ? "Very Weak" : "";
+    });
+  }
+
+  List<Widget> _buildRequiredCharacter(String password) {
     var wids = <Widget>[];
     _requiredSymbol.asMap().forEach((i, text) {
-      wids.add(Container(
-        width: 50,
-        height: 50,
-        child: Center(
-          child: Text((text),
-              textAlign: TextAlign.center,
-              textDirection: TextDirection.ltr,
-              style: TextStyle(color: Colors.white, fontSize: 28)),
-        ),
-      ));
+      var contains = _validatePassword(password, text);
+      if (!contains) {
+        wids.add(Container(
+          width: 50,
+          height: 50,
+          child: Center(
+            child: Text((text),
+                textAlign: TextAlign.center,
+                textDirection: TextDirection.ltr,
+                style: TextStyle(color: Colors.white, fontSize: 28)),
+          ),
+        ));
+      } else {
+        wids.add(Container(
+          width: 40,
+          height: 40,
+          decoration:
+              BoxDecoration(shape: BoxShape.circle, color: Colors.green),
+          child: Center(
+              child: Icon(
+            Icons.check,
+            color: Colors.white,
+            size: 30.0,
+          )),
+        ));
+      }
     });
 
     return wids;
@@ -98,8 +151,13 @@ class PasswordFormState extends State<PasswordForm> {
                   autovalidateMode: AutovalidateMode.always,
                   key: _formKey,
                   child: PasswordField(
-                      hintText: "Password",
-                      onChanged: (value) {},
+                      hintText: "Create Password",
+                      onChanged: (value) {
+                        setState(() {
+                          _password = value;
+                          _generateComplexity(value);
+                        });
+                      },
                       secure: _secure,
                       onPressedIcon: _toggle,
                       icon: icon),
@@ -111,9 +169,9 @@ class PasswordFormState extends State<PasswordForm> {
                   text: TextSpan(
                     text: 'Complexity:     ',
                     style: TextStyle(fontSize: 18, color: Colors.white70),
-                    children: const <TextSpan>[
+                    children: <TextSpan>[
                       TextSpan(
-                          text: 'Very Weak',
+                          text: "$complexity",
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
@@ -131,10 +189,15 @@ class PasswordFormState extends State<PasswordForm> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: _buildRequiredCharacter()),
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: _buildRequiredCharacter("$_password")),
+                SizedBox(
+                  height: 10,
+                ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: _buildText(),
                 ),
               ],
@@ -144,7 +207,9 @@ class PasswordFormState extends State<PasswordForm> {
           Button(
               color: Colors.green,
               press: () {
-                Navigator.pop(context);
+                if (_auth()) {
+                  Navigator.pop(context);
+                }
               },
               text: "Next"),
         ],
